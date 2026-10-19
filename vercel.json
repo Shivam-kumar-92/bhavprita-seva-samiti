@@ -3,6 +3,14 @@
   "cleanUrls": true,
   "routes": [
     {
+      "src": "/api/contacts",
+      "dest": "/api/contacts.js"
+    },
+    {
+      "src": "/api/donations(.*)",
+      "dest": "/api/donations.js"
+    },
+    {
       "src": "/assets/(.*)",
       "dest": "/assets/$1"
     },
