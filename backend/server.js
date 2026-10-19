@@ -23,8 +23,23 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
-// ─── Middleware ───
-app.use(cors());
+// Allowed CORS origins
+const allowedOrigins = [
+  'http://localhost:5000',
+  'http://localhost:3000',
+  'https://bhavprita-seva-samiti.vercel.app'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, or same-origin)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, true); // Fallback permissive for development
+  },
+  credentials: true
+}));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -43,7 +58,7 @@ const apiLimiter = rateLimit({
 // Stricter rate limit for form submissions
 const formLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
-  max: 10,                     // 10 submissions per window
+  max: 15,                     // 15 submissions per window
   message: {
     success: false,
     message: 'Too many submissions. Please try again later.'
@@ -54,19 +69,32 @@ const formLimiter = rateLimit({
 // Serve admin dashboard
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve the parent directory (NGO.html + images)
+// Serve the parent directory (index.html + assets)
 app.use(express.static(path.join(__dirname, '..')));
 
 
 // =======================================================
-// 📡 RAZORPAY PAYMENT ROUTE (Must be before general routes)
+// 📡 RAZORPAY PAYMENT ROUTE
 // =======================================================
-app.post('/api/donations/create-order', apiLimiter, async (req, res) => {
+app.post('/api/donations/create-order', formLimiter, async (req, res) => {
   try {
     const { amount } = req.body;
 
     if (!amount || isNaN(amount)) {
       return res.status(400).json({ success: false, message: "Valid amount is required" });
+    }
+
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      // In offline / fallback test mode without keys
+      return res.status(200).json({
+        success: true,
+        testMode: true,
+        order: {
+          id: `order_mock_${Date.now()}`,
+          amount: parseInt(amount) * 100,
+          currency: "INR"
+        }
+      });
     }
 
     const options = {
@@ -76,7 +104,7 @@ app.post('/api/donations/create-order', apiLimiter, async (req, res) => {
     };
 
     const order = await razorpay.orders.create(options);
-    res.status(200).json({ success: true, order });
+    res.status(200).json({ success: true, order, keyId: process.env.RAZORPAY_KEY_ID });
   } catch (error) {
     console.error("Razorpay Order Error:", error);
     res.status(500).json({ success: false, message: "Order creation failed" });
@@ -88,21 +116,12 @@ app.post('/api/donations/create-order', apiLimiter, async (req, res) => {
 const donationRoutes = require('./routes/donations');
 const contactRoutes = require('./routes/contacts');
 
-// Apply general api rate limits
-// Note: Hataya 'app.post(/api/donations)' yahan se taaki create-order crash na kare
-app.use('/api/donations', apiLimiter);
-app.use('/api/contacts', apiLimiter);
+app.use('/api/donations', apiLimiter, donationRoutes);
+app.use('/api/contacts', formLimiter, contactRoutes);
 
-// Specific stricter limit for direct fallback post submsissions if any
-app.post('/api/contacts', formLimiter);
-
-// Mount main routers
-app.use('/api/donations', donationRoutes);
-app.use('/api/contacts', contactRoutes);
-
-// ─── Root → serve NGO.html ───
+// ─── Root → serve index.html ───
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'NGO.html'));
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
 // ─── 404 Handler ───
