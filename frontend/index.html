@@ -2443,13 +2443,15 @@
         <div>
           <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:24px" class="reveal">Other Ways to Help</h3>
           <div class="ways-list">
-            <div class="way-card reveal delay-1">
-              <div class="way-icon" style="background:rgba(22,163,74,.1);color:var(--green)"><i
+            <div class="way-card reveal delay-1" style="cursor:pointer;border:1px solid rgba(22,163,74,0.3);background:#f0fdf4;transition:transform .2s" onclick="openVolunteerModal()">
+              <div class="way-icon" style="background:rgba(22,163,74,.15);color:var(--green)"><i
                   class="fas fa-user-plus"></i></div>
               <div>
-                <h4>Volunteer With Us</h4>
-                <p>Join our network of 200+ volunteers and contribute your time and skills. Flexible — on-ground or
-                  remote opportunities available.</p>
+                <h4 style="color:var(--g1);display:flex;align-items:center;justify-content:space-between">
+                  <span>Volunteer With Us</span>
+                  <span style="font-size:11px;background:var(--green);color:#fff;padding:2px 8px;border-radius:12px;font-weight:700">Register Now &rarr;</span>
+                </h4>
+                <p>Join our network of 200+ volunteers and contribute your time in Jharkhand. Flexible — on-ground & remote opportunities.</p>
               </div>
             </div>
             <div class="way-card reveal delay-2">
@@ -2700,6 +2702,64 @@
         <input type="text" id="aiInput" placeholder="Ask AI a question..." style="flex:1;padding:10px 14px;border-radius:20px;border:1px solid #cbd5e1;font-size:12px;outline:none" />
         <button type="submit" style="width:36px;height:36px;border-radius:50%;background:#16a34a;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center">
           <i class="fas fa-paper-plane" style="font-size:11px"></i>
+        </button>
+      </form>
+    </div>
+  <!-- ══════════ DEDICATED VOLUNTEER REGISTRATION MODAL ══════════ -->
+  <div id="volunteerModal" style="display:none;position:fixed;inset:0;background:rgba(5,46,22,0.8);backdrop-filter:blur(6px);z-index:99999;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#fff;border-radius:24px;max-width:480px;width:100%;padding:28px;position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto">
+      <button onclick="closeVolunteerModal()" style="position:absolute;top:18px;right:18px;background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8">&times;</button>
+      
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="width:42px;height:42px;border-radius:12px;background:rgba(22,163,74,0.15);color:#16a34a;display:flex;align-items:center;justify-content:center;font-size:20px">
+          <i class="fas fa-hand-holding-heart"></i>
+        </div>
+        <div>
+          <h3 style="margin:0;font-size:18px;font-weight:800;color:#052e16">Volunteer Registration</h3>
+          <p style="margin:0;font-size:12px;color:#64748b">Join Bhavprita Seva Samiti's community workforce</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleVolunteerSubmit(event)" style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#334155;text-transform:uppercase">Full Name</label>
+          <input type="text" id="vName" required placeholder="Your full name" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid #cbd5e1;font-size:13px;outline:none" />
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <label style="font-size:11px;font-weight:700;color:#334155;text-transform:uppercase">Phone (WhatsApp)</label>
+            <input type="tel" id="vPhone" required placeholder="10-digit number" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid #cbd5e1;font-size:13px;outline:none" />
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:700;color:#334155;text-transform:uppercase">City / District</label>
+            <input type="text" id="vCity" required placeholder="e.g. Ranchi / Jamshedpur" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid #cbd5e1;font-size:13px;outline:none" />
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#334155;text-transform:uppercase">Preferred Area of Contribution</label>
+          <select id="vDomain" required style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid #cbd5e1;font-size:13px;outline:none">
+            <option value="Environmental Protection & Tree Planting">🌱 Tree Plantation & Environmental Drives</option>
+            <option value="Adult Literacy Teaching">📚 Teaching Adult Literacy & Basic Math</option>
+            <option value="Student Motivation & Mentorship">🏆 Student Mentorship & Career Guidance</option>
+            <option value="Women Vocational Training">💜 Women Skill Development & Self-Help Groups</option>
+            <option value="Media & Event Photography">📸 Photography, Media & Social Media</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#334155;text-transform:uppercase">Your Availability</label>
+          <select id="vAvailability" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid #cbd5e1;font-size:13px;outline:none">
+            <option value="Weekends Only">Weekends (Saturday / Sunday)</option>
+            <option value="Flexible On-Ground">Flexible On-Ground (During Events)</option>
+            <option value="Full-Time / Weekly">Full-Time / Regular Weekly Hours</option>
+            <option value="Remote / Virtual">Remote / Virtual Support</option>
+          </select>
+        </div>
+
+        <button type="submit" id="vBtn" style="padding:12px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;font-weight:800;font-size:13px;cursor:pointer;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px">
+          <i class="fas fa-check"></i> Submit Volunteer Application
         </button>
       </form>
     </div>
@@ -3191,6 +3251,57 @@
       });
 
       showToast(currentLang === 'hi' ? 'भाषा बदली गई' : 'Language Switched', currentLang === 'hi' ? 'वेबसाइट अब हिन्दी में उपलब्ध है।' : 'Website switched to English.');
+    }
+
+    // ── Dedicated Volunteer Modal Handlers ──
+    function openVolunteerModal() {
+      const modal = document.getElementById('volunteerModal');
+      modal.style.display = 'flex';
+    }
+
+    function closeVolunteerModal() {
+      const modal = document.getElementById('volunteerModal');
+      modal.style.display = 'none';
+    }
+
+    async function handleVolunteerSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('vName').value.trim();
+      const phone = document.getElementById('vPhone').value.trim();
+      const city = document.getElementById('vCity').value.trim();
+      const domain = document.getElementById('vDomain').value;
+      const availability = document.getElementById('vAvailability').value;
+      const btn = document.getElementById('vBtn');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting Application...';
+
+      try {
+        await fetch(`${API_BASE}/api/contacts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            firstName: name,
+            lastName: `[Volunteer: ${city}]`,
+            email: `${phone.replace(/\D/g, '')}@volunteer.bss`,
+            subject: `Volunteer Registration: ${domain}`,
+            message: `New Volunteer Application!\nName: ${name}\nPhone: ${phone}\nCity/District: ${city}\nArea: ${domain}\nAvailability: ${availability}`
+          })
+        });
+      } catch (err) {
+        console.warn('Volunteer submit offline fallback:', err);
+      }
+
+      btn.innerHTML = '<i class="fas fa-check"></i> Welcome to the Team!';
+      btn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
+      showToast('Volunteer Application Received! 🤝', `Thank you ${name}! Our Jharkhand field coordinator will connect with you via WhatsApp soon.`);
+
+      setTimeout(() => {
+        closeVolunteerModal();
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> Submit Volunteer Application';
+        btn.style.background = '';
+      }, 2500);
     }
   </script>
 </body>
