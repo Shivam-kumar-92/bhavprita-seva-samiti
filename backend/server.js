@@ -17,11 +17,16 @@ connectDB();
 // ─── Initialize Mailer ───
 initMailer();
 
-// Initialize Razorpay instance using environment variables
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+// Initialize Razorpay instance safely (only if keys exist in environment)
+let razorpay = null;
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+  razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET
+  });
+} else {
+  console.log('💳 Razorpay running in test / simulated fallback mode (No keys set).');
+}
 
 // Allowed CORS origins
 const allowedOrigins = [

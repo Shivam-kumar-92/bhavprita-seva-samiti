@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
+  const uri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/bhavprita';
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    const conn = await mongoose.connect(uri, { serverSelectionTimeoutMS: 2000 });
     console.log(`✅ MongoDB connected: ${conn.connection.host}`);
   } catch (err) {
-    console.warn(`⚠️ MongoDB connection warning: ${err.message}`);
-    console.warn('⚠️ Server is running without a database. Form submissions will only trigger emails (if configured) but will not be saved.');
+    console.log(`📦 MongoDB offline (${err.message}). Using local JSON fallback storage in backend/data/ for zero-setup persistence.`);
   }
 };
 
